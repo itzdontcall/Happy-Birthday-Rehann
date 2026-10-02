@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday 🩶</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    height: 100vh;
+    overflow: hidden;
+    background: #222225;
+    color: #eee;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Bintang di background */
+.stars {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.star {
+    position: absolute;
+    color: #aaa;
+    animation: twinkle 2s infinite alternate;
+}
+
+@keyframes twinkle {
+    from { opacity: .2; }
+    to { opacity: 1; }
+}
+
+/* Amplop */
+.container {
+    position: relative;
+    width: 300px;
+    height: 220px;
+    cursor: pointer;
+    transition: .5s;
+}
+
+.envelope {
+    position: absolute;
+    width: 100%;
+    height: 160px;
+    bottom: 0;
+    background: #85858b;
+    border-radius: 5px;
+    box-shadow: 0 10px 30px #0007;
+}
+
+.envelope::before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    border-left: 150px solid transparent;
+    border-right: 150px solid transparent;
+    border-bottom: 100px solid #a5a5aa;
+    z-index: 3;
+}
+
+.flap {
+    position: absolute;
+    top: 60px;
+    left: 0;
+    width: 0;
+    height: 0;
+    border-left: 150px solid transparent;
+    border-right: 150px solid transparent;
+    border-top: 100px solid #c1c1c5;
+    transform-origin: top;
+    transition: transform .8s;
+    z-index: 4;
+}
+
+.heart {
+    position: absolute;
+    top: 110px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #44444a;
+    font-size: 35px;
+    z-index: 5;
+}
+
+/* Kertas */
+.paper {
+    position: absolute;
+    width: 260px;
+    height: 180px;
+    background: #dedee0;
+    color: #333;
+    left: 20px;
+    bottom: 15px;
+    padding: 20px;
+    text-align: center;
+    border-radius: 4px;
+    box-shadow: 0 5px 20px #0005;
+    z-index: 2;
+    transition: transform 1s ease;
+}
+
+.paper h2 {
+    font-family: cursive;
+    font-size: 24px;
+    margin: 10px 0;
+}
+
+.paper p {
+    font-size: 13px;
+}
+
+/* Ketika dibuka */
+.container.open .flap {
+    transform: rotateX(180deg);
+    z-index: 1;
+}
+
+.container.open .paper {
+    animation: paperFall 2s 1s forwards;
+}
+
+@keyframes paperFall {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        z-index: 2;
+    }
+    40% {
+        transform: translateY(-180px) rotate(-5deg);
+    }
+    100% {
+        transform: translateY(180px) rotate(5deg) scale(1.1);
+        z-index: 10;
+    }
+}
+
+.container.open {
+    transform: translateY(100px);
+}
+
+.hint {
+    position: absolute;
+    top: calc(50% + 150px);
+    color: #aaa;
+    font-size: 14px;
+    text-align: center;
+    width: 100%;
+}
+
+/* Pesan akhir */
+.message {
+    position: absolute;
+    width: 90%;
+    max-width: 350px;
+    text-align: center;
+    opacity: 0;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 20;
+}
+
+.message.show {
+    animation: appear 1.5s 2.5s forwards;
+}
+
+@keyframes appear {
+    to { opacity: 1; }
+}
+
+.message h1 {
+    font-family: cursive;
+    font-size: 35px;
+    color: #eee;
+    text-shadow: 0 0 15px #aaa;
+}
+
+.message p {
+    line-height: 1.8;
+    color: #ccc;
+}
+
+/* Confetti */
+.confetti {
+    position: fixed;
+    top: -20px;
+    width: 8px;
+    height: 12px;
+    z-index: 30;
+    animation: fall linear forwards;
+}
+
+@keyframes fall {
+    to {
+        transform: translateY(110vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="stars" id="stars"></div>
+
+<div class="container" id="envelope" onclick="openLetter()">
+    <div class="paper">
+        <h2>Happy Birthday!</h2>
+        <p>🎂 🩶 🎂</p>
+        <p>Semoga harimu menyenangkan!</p>
+    </div>
+
+    <div class="envelope"></div>
+    <div class="flap"></div>
+    <div class="heart">♥</div>
+</div>
+
+<div class="hint" id="hint">Klik suratnya untuk membuka 🩶</div>
+
+<div class="message" id="message">
+    <h1>Happy Birthday! 🎂</h1>
+    <p>
+        Selamat ulang tahun! 🩶<br>
+        Semoga semua impianmu tercapai.<br>
+        Semoga hari-harimu selalu dipenuhi<br>
+        kebahagiaan dan hal-hal baik.
+    </p>
+    <h2>♡</h2>
+</div>
+
+<script>
+let opened = false;
+
+function openLetter() {
+    if (opened) return;
+    opened = true;
+
+    const envelope = document.getElementById("envelope");
+    const hint = document.getElementById("hint");
+    const message = document.getElementById("message");
+
+    envelope.classList.add("open");
+    hint.style.display = "none";
+
+    setTimeout(() => {
+        createConfetti();
+        message.classList.add("show");
+    }, 1500);
+}
+
+// Membuat confetti abu-abu
+function createConfetti() {
+    const colors = [
+        "#eeeeee",
+        "#bdbdc2",
+        "#85858b",
+        "#55555b",
+        "#d5d5d8"
+    ];
+
+    for (let i = 0; i < 120; i++) {
+        const confetti = document.createElement("div");
+        confetti.className = "confetti";
+
+        confetti.style.left = Math.random() * 100 + "vw";
+        confetti.style.background =
+            colors[Math.floor(Math.random() * colors.length)];
+
+        confetti.style.animationDuration =
+            (Math.random() * 3 + 2) + "s";
+
+        confetti.style.animationDelay =
+            Math.random() * 2 + "s";
+
+        confetti.style.transform =
+            `rotate(${Math.random() * 360}deg)`;
+
+        document.body.appendChild(confetti);
+
+        setTimeout(() => {
+            confetti.remove();
+        }, 7000);
+    }
+}
+
+// Membuat bintang
+const stars = document.getElementById("stars");
+
+for (let i = 0; i < 50; i++) {
+    const star = document.createElement("span");
+    star.className = "star";
+    star.innerHTML = "✦";
+
+    star.style.left = Math.random() * 100 + "%";
+    star.style.top = Math.random() * 100 + "%";
+    star.style.fontSize = (Math.random() * 10 + 5) + "px";
+    star.style.animationDelay = Math.random() * 2 + "s";
+
+    stars.appendChild(star);
+}
+</script>
+
+</body>
+</html>
